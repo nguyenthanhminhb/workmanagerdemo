@@ -61,11 +61,11 @@ class MainActivity : AppCompatActivity() {
                 OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
                 TimeUnit.MILLISECONDS).build()
             WorkManager.getInstance().beginWith(task).then(trackingTask).enqueue()
-            WorkManager.getInstance().getWorkInfoByIdLiveData(trackingTask.id).observe(this,
-                Observer {
+//            WorkManager.getInstance().getWorkInfoByIdLiveData(trackingTask.id).observe(this,
+//                Observer {
 //                    if (it?.state == WorkInfo.State.SUCCEEDED)
 //                        Log.d("hehehe", "progress live data = $it")
-                })
+//                })
         }
 
         LiveDataHelper.getInstance().progressLiveData.observe(this, Observer {
