@@ -38,7 +38,6 @@ class MainAdapter(var list: MutableList<ImageModel>,
 
         fun setData(imageModel: ImageModel) {
             itemView.tvName.text = imageModel.url
-            itemView.tvProgress.text = "${imageModel.progress} %"
             itemView.tvStatus.text = when (imageModel.status) {
                 ImageModel.Status.DONE -> "Done"
                 ImageModel.Status.FAILED -> "Failed"
@@ -62,6 +61,5 @@ class MainAdapter(var list: MutableList<ImageModel>,
     fun updateData(position: Int, filePath: String) {
         list[position].status = ImageModel.Status.DONE
         list[position].filePath = filePath
-        notifyItemChanged(position)
     }
 }

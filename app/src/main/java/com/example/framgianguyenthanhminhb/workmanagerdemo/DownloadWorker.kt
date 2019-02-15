@@ -13,7 +13,7 @@ import androidx.work.WorkerParameters
  * Created by MinhNguyen on 27/11/2018.
  * nguyen.thanh.minhb@framgia.com
  */
-class DownloadWorker(context: Context, workerParameters: WorkerParameters) : Worker(context,
+class DownloadWorker(val context: Context, workerParameters: WorkerParameters) : Worker(context,
     workerParameters) {
 
     private var downloadManager: DownloadManager = context.getSystemService(
@@ -21,8 +21,10 @@ class DownloadWorker(context: Context, workerParameters: WorkerParameters) : Wor
 
     override fun doWork(): Result {
         return try {
-            val url = inputData.getString(MY_KEY)
+            val url = inputData.getString(DOWNLOAD_URL)
             val pos = inputData.getInt(DOWNLOAD_POSITION, 0)
+
+            // do anything
             val request = DownloadManager.Request(Uri.parse(url))
             request.setAllowedNetworkTypes(
                 DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
@@ -31,6 +33,7 @@ class DownloadWorker(context: Context, workerParameters: WorkerParameters) : Wor
             val fileName = "${System.currentTimeMillis()}.png"
             request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName)
             val refId = downloadManager.enqueue(request)
+
             val output = Data.Builder()
             output.putInt(DOWNLOAD_POSITION, pos)
             output.putString(FILE_PATH, fileName)

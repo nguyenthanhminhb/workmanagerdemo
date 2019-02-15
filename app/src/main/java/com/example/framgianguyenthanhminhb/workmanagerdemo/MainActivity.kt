@@ -27,38 +27,49 @@ class MainActivity : AppCompatActivity() {
     private lateinit var adapter: MainAdapter
     private lateinit var downloadManager: DownloadManager
 
+    companion object {
+        private const val ITEM_COUNT = 10
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         downloadManager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
         if (!isStoragePermissionGranted()) {
-
         }
         setContentView(R.layout.activity_main)
         rvMain.layoutManager = LinearLayoutManager(this)
-        adapter = MainAdapter(getArrayRandomImage(5)) { url, pos ->
+
+
+
+
+        adapter = MainAdapter(getArrayRandomImage(ITEM_COUNT, false)) { url, pos ->
             val inputData = Data.Builder()
-            inputData.putString(MY_KEY, url)
+            inputData.putString(DOWNLOAD_URL, url)
             inputData.putInt(DOWNLOAD_POSITION, pos)
             val task = OneTimeWorkRequest.Builder(
                 DownloadWorker::class.java).setInputData(
                 inputData.build()).build()
             WorkManager.getInstance().beginWith(task).enqueue()
             WorkManager.getInstance().getWorkInfoByIdLiveData(task.id).observe(this, Observer {
+                Log.d("hehehe", it?.state.toString())
                 if (it?.state == WorkInfo.State.SUCCEEDED)
                     adapter.updateData(it.outputData.getInt(DOWNLOAD_POSITION, 0),
                         it.outputData.getString(FILE_PATH) ?: "")
             })
-        }
-        rvMain.adapter = adapter
 
+
+        }
+
+
+
+        rvMain.adapter = adapter
     }
 
     private var onComplete: BroadcastReceiver = object : BroadcastReceiver() {
 
         override fun onReceive(ctxt: Context, intent: Intent) {
 
-            val referenceId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
-            Log.d("hehehe", "referenceId = $referenceId")
+
             val mBuilder = NotificationCompat.Builder(this@MainActivity).setSmallIcon(
                 R.mipmap.ic_launcher)
                 .setContentTitle("Workmanager demo")
@@ -67,6 +78,7 @@ class MainActivity : AppCompatActivity() {
             val notificationManager = getSystemService(
                 Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.notify(455, mBuilder.build())
+            adapter.notifyDataSetChanged()
         }
     }
 
@@ -81,18 +93,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun isStoragePermissionGranted(): Boolean {
-        if (Build.VERSION.SDK_INT >= 23) {
+        return if (Build.VERSION.SDK_INT >= 23) {
             if (checkSelfPermission(
                     android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                return true
+                true
             } else {
 
                 ActivityCompat.requestPermissions(this,
                     arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 1)
-                return false
+                false
             }
-        } else { //permission is automatically granted on sdk<23 upon installation
-            return true
+        } else {
+            true
         }
     }
 
@@ -100,7 +112,6 @@ class MainActivity : AppCompatActivity() {
         grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            // permission granted
         }
     }
 }
