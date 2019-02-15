@@ -37,6 +37,7 @@ class DownloadWorker(val context: Context, workerParameters: WorkerParameters) :
             val output = Data.Builder()
             output.putInt(DOWNLOAD_POSITION, pos)
             output.putString(FILE_PATH, fileName)
+            output.putLong(DOWNLOAD_ID, refId)
             Log.d("hehehe", "Download SUCCESS $refId")
             Result.success(output.build())
         } catch (e: Exception) {
@@ -44,4 +45,6 @@ class DownloadWorker(val context: Context, workerParameters: WorkerParameters) :
             Result.failure()
         }
     }
+
+
 }

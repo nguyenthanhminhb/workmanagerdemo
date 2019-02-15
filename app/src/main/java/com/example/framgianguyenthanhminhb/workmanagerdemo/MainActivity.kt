@@ -16,11 +16,10 @@ import android.support.v4.app.NotificationCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
-import androidx.work.Data
-import androidx.work.OneTimeWorkRequest
-import androidx.work.WorkInfo
-import androidx.work.WorkManager
+import androidx.work.*
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.concurrent.TimeUnit
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -49,7 +48,7 @@ class MainActivity : AppCompatActivity() {
             val task = OneTimeWorkRequest.Builder(
                 DownloadWorker::class.java).setInputData(
                 inputData.build()).build()
-            WorkManager.getInstance().beginWith(task).enqueue()
+//            WorkManager.getInstance().beginWith(task).enqueue()
             WorkManager.getInstance().getWorkInfoByIdLiveData(task.id).observe(this, Observer {
                 Log.d("hehehe", it?.state.toString())
                 if (it?.state == WorkInfo.State.SUCCEEDED)
@@ -58,7 +57,21 @@ class MainActivity : AppCompatActivity() {
             })
 
 
+            val trackingTask = OneTimeWorkRequest.Builder(
+                TrackingProgressWorker::class.java).setBackoffCriteria(
+                BackoffPolicy.LINEAR,
+                OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+                TimeUnit.MILLISECONDS).build()
+            WorkManager.getInstance().beginWith(task).then(trackingTask).enqueue()
+            WorkManager.getInstance().getWorkInfoByIdLiveData(trackingTask.id).observe(this,
+                Observer {
+//                    Log.d("hehehe", "progress live data = $it")
+                })
         }
+
+        LiveDataHelper.getInstance().progressLiveData.observe(this, Observer {
+            Log.d("hehehe", "progress = $it")
+        })
 
 
 

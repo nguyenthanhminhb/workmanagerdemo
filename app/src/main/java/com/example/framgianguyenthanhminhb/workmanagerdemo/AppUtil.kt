@@ -5,6 +5,7 @@ import java.util.*
 const val DOWNLOAD_URL = "DOWNLOAD_URL"
 const val DOWNLOAD_POSITION = "DOWNLOAD_POSITION"
 const val FILE_PATH = "FILE_PATH"
+const val DOWNLOAD_ID = "DOWNLOAD_ID"
 
 val imageStocks = mutableListOf(
     "https://unsplash.com/photos/sOGYhwV-B2A/download?force=true",
