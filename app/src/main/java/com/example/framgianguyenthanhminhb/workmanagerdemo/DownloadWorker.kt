@@ -4,7 +4,6 @@ import android.app.DownloadManager
 import android.content.Context
 import android.net.Uri
 import android.os.Environment
-import android.util.Log
 import androidx.work.Data
 import androidx.work.Worker
 import androidx.work.WorkerParameters
@@ -38,10 +37,8 @@ class DownloadWorker(val context: Context, workerParameters: WorkerParameters) :
             output.putInt(DOWNLOAD_POSITION, pos)
             output.putString(FILE_PATH, fileName)
             output.putLong(DOWNLOAD_ID, refId)
-            Log.d("hehehe", "Download SUCCESS $refId")
             Result.success(output.build())
         } catch (e: Exception) {
-            Log.d("hehehe", "Download FAIL")
             Result.failure()
         }
     }

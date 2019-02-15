@@ -21,16 +21,16 @@ class TrackingProgressWorker(val context: Context, workerParameters: WorkerParam
         return if (downloadId != -1L) {
             val progress = trackingProgress(downloadId)
             if (progress < 100) {
-
                 LiveDataHelper.getInstance().updatePercentage(progress)
-                Log.d("hehehe", "Tr retry")
+                Log.d("hehehe", "TrackingProgressWorker retry")
                 Result.retry()
             } else {
-                Log.d("hehehe", "Tr ss")
+                LiveDataHelper.getInstance().updatePercentage(progress)
+                Log.d("hehehe", "TrackingProgressWorker success")
                 Result.success()
             }
         } else {
-            Log.d("hehehe", "Tr FAI $downloadId")
+            Log.d("hehehe", "TrackingProgressWorker fail $downloadId")
             Result.failure()
         }
     }

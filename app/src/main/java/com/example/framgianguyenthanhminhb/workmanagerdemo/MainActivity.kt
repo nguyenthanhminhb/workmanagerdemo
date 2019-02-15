@@ -48,9 +48,7 @@ class MainActivity : AppCompatActivity() {
             val task = OneTimeWorkRequest.Builder(
                 DownloadWorker::class.java).setInputData(
                 inputData.build()).build()
-//            WorkManager.getInstance().beginWith(task).enqueue()
             WorkManager.getInstance().getWorkInfoByIdLiveData(task.id).observe(this, Observer {
-                Log.d("hehehe", it?.state.toString())
                 if (it?.state == WorkInfo.State.SUCCEEDED)
                     adapter.updateData(it.outputData.getInt(DOWNLOAD_POSITION, 0),
                         it.outputData.getString(FILE_PATH) ?: "")
@@ -65,12 +63,13 @@ class MainActivity : AppCompatActivity() {
             WorkManager.getInstance().beginWith(task).then(trackingTask).enqueue()
             WorkManager.getInstance().getWorkInfoByIdLiveData(trackingTask.id).observe(this,
                 Observer {
-//                    Log.d("hehehe", "progress live data = $it")
+//                    if (it?.state == WorkInfo.State.SUCCEEDED)
+//                        Log.d("hehehe", "progress live data = $it")
                 })
         }
 
         LiveDataHelper.getInstance().progressLiveData.observe(this, Observer {
-            Log.d("hehehe", "progress = $it")
+            Log.d("hehehe", "progress from livedatahelper = $it")
         })
 
 
